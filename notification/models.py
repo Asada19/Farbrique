@@ -25,7 +25,7 @@ class Client(models.Model):
 class Message(models.Model):
     STATUS = (
         ('SENT', "SENT"),
-        ('NOT SENT', "NOT_SENT")
+        ('NOT_SENT', "NOT_SENT")
     )
     created_at = models.DateTimeField(auto_now=True)
     status = models.CharField(choices=STATUS, max_length=10)

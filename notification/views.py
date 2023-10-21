@@ -1,55 +1,33 @@
-import http
-
-from rest_framework import generics
+from rest_framework.decorators import action
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from notification.serializers import NewsletterSerializer, ClientSerializer, MessageSerializer, StatisticSerializer, GeneralStatisticSerializer
-from notification.services import NewsletterService, ClientService, MessageService
+from notification.serializers import NewsletterSerializer, ClientSerializer, MessageSerializer, StatisticSerializer
+from notification.services import NewsletterService
 from .models import Newsletter, Client, Message
+from drf_yasg.utils import swagger_auto_schema
 
 
-class NewsletterAPIView(generics.ListCreateAPIView):
+class NewsletterAPIView(viewsets.ModelViewSet):
+    model = Newsletter
     serializer_class = NewsletterSerializer
     queryset = Newsletter.objects.all()
     service = NewsletterService
 
-
-class Statistic(generics.ListAPIView):
-    service = NewsletterService
-    serializer_class = StatisticSerializer
-
-    def get_queryset(self):
+    @action(detail=False, methods=['get'])
+    def general_statistics(self, *args, **kwargs):
         data = self.service.general_statistic()
-        return data
+        response = StatisticSerializer(data, many=True).data
+        return Response(response, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'])
+    def detail_statistics(self, *args, **kwargs):
+        data = self.service.detail_statistic(pk=self.kwargs.get('pk'))
+        response = StatisticSerializer(data).data
+        return Response(response, status=status.HTTP_200_OK)
 
 
-class DetailStatistic(generics.RetrieveAPIView):
-
-    serializer_class = StatisticSerializer
-    queryset = Newsletter.objects.all()
-    service = NewsletterService
-
-    def get_queryset(self):
-        data = self.service.detail_statistic(self.request.data.get('pk'))
-        return data
-
-
-class NewsletterRetrieveAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = NewsletterSerializer
-    queryset = Newsletter.objects.all()
-    service = NewsletterService
-
-
-class ClientAPIView(generics.ListCreateAPIView):
+class ClientAPIView(viewsets.ModelViewSet):
+    model = Client
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
-
-
-class ClientRetrieveAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ClientSerializer
-    queryset = Client.objects.all()
-
-
-class MessageAPIView(generics.ListCreateAPIView):
-    serializer_class = MessageSerializer
-    service = MessageService
 
