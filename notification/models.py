@@ -8,12 +8,18 @@ class Newsletter(models.Model):
     text = models.TextField()
     filter_client = models.JSONField(default=dict)
 
+    def __str__(self):
+        return self.text
+
 
 class Client(models.Model):
     phone_number = models.CharField(max_length=15)
     code_operator = models.CharField(max_length=5)
     tag = models.CharField(max_length=10)
     timezone = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.phone_number
 
 
 class Message(models.Model):
@@ -23,8 +29,9 @@ class Message(models.Model):
     )
     created_at = models.DateTimeField(auto_now=True)
     status = models.CharField(choices=STATUS, max_length=10)
-    news_letter = models.ForeignKey(NewsLetter, on_delete=models.CASCADE, related_name='message')
+    newsletter = models.ForeignKey(Newsletter, on_delete=models.CASCADE, related_name='message')
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='message')
 
-
+    def __str__(self):
+        return self.client, self.newsletter, self.status
 
