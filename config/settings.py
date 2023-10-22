@@ -82,12 +82,39 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get('DB_ENGINE'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB_NAME'),
+            'USER': os.environ.get('POSTGRES_USER_NAME'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+            'PORT': os.environ.get('POSTGRES_PORT'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+MONGO_INITDB_ROOT_USERNAME = os.getenv('MONGO_INITDB_ROOT_USERNAME')
+MONGO_INITDB_ROOT_PASSWORD = os.getenv('MONGO_INITDB_ROOT_PASSWORD')
+MONGO_INITDB_DATABASE = os.getenv('MONGO_INITDB_DATABASE')
+MONGO_INITDB_USERNAME = os.getenv('MONGO_INITDB_USERNAME')
+MONGO_INITDB_PASSWORD = os.getenv('MONGO_INITDB_PASSWORD')
+MONGO_HOST = os.getenv('MONGO_HOST')
+MONGO_PORT = os.getenv('MONGO_PORT')
+
+REDIS_HOST = os.environ.get('REDIS_HOST')
+REDIS_PORT = os.environ.get('REDIS_PORT')
+REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0")
 
 
 # Password validation
