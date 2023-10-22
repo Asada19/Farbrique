@@ -1,7 +1,7 @@
 import pytz
 from django.db import models
 from .validators import phone_number_validator, filter_validator
-from notification.tasks import create_task
+from notification.tasks import start_message
 
 
 class Mailing(models.Model):
@@ -14,7 +14,7 @@ class Mailing(models.Model):
         return f'Mailing id: {self.id}, text: {self.text}'
 
     def save(self, *args, **kwargs):
-        create_task.delay(self.id)
+        start_message.delay(self.id)
         super().save(*args, **kwargs)
 
     class Meta:

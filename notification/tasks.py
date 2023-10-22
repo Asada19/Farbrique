@@ -1,31 +1,34 @@
 import pytz
 from celery import shared_task
 from datetime import datetime
-from .notify import send_mailing_message, create_message, filter_clients
-from celery import shared_task
 from django.conf import settings
+from .notify import send_mailing_message, create_message, filter_clients
 
 
 @shared_task
-def create_task(mailing_id) -> None:
-    from notification.models import Mailing, Client
+def start_message(mailing_id):
+    from notification.models import Mailing, Client, Message
 
-    mailing = Mailing.objects.get(id=mailing_id)
-    time_now = datetime.now().astimezone(pytz.timezone(settings.TIME_ZONE))
+    try:
+        mailing = Mailing.objects.get(id=mailing_id)
+        current_time = datetime.now().astimezone(pytz.timezone(settings.TIME_ZONE))
 
-    if time_now >= mailing.start_time >= mailing.end_time:
+        if mailing.start_time <= current_time <= mailing.end_time:
+            return  # Exit if current time is within the mailing window
+
         clients = filter_clients(mailing)
         for client in clients:
             message = create_message(mailing_id=mailing.id, client_id=client.id)
             response = send_mailing_message(message_id=message.id,
                                             phone_number=client.phone_number,
                                             text=mailing.text)
-            print(response)
             if response.status_code == 200:
                 message.status = 'SENT'
                 message.save()
             else:
-                create_task.apply_async((mailing, ), countdown=180)
+                start_message.apply_async((mailing_id,), countdown=180)
 
-    elif time_now < mailing.start_time:
-        create_task.apply_async((mailing,), eta=mailing.start_time)
+        if current_time <= mailing.start_time:
+            start_message.apply_async((mailing_id,), eta=mailing.start_time)
+    except Mailing.DoesNotExist:
+        pass

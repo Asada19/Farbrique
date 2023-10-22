@@ -18,18 +18,21 @@ def send_mailing_message(message_id: int, phone_number: str, text: str):
         "phone": phone_number,
         "text": text,
     }
-    print('Message sent')
     return requests.post(service_url, json=request_body, headers=headers)
 
 
 def create_message(mailing_id, client_id):
+    from notification.models import Mailing, Client, Message
+
     client = Client.objects.get(id=client_id)
     mailing = Mailing.objects.get(id=mailing_id)
     message = Message.objects.create(client=client, mailing=mailing)
+    message.save()
     return message
 
 
 def filter_clients(mailing):
+    from notification.models import Client
 
     tag = mailing.filter_client.get('tag')
     operator_code = mailing.filter_client.get('operator_code')
