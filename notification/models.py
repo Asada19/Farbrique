@@ -1,12 +1,13 @@
 import pytz
 from django.db import models
+from .validators import phone_number_validator, filter_validator
 
 
 class Mailing(models.Model):
     start_time = models.DateTimeField(verbose_name="время запуска рассылки")
     end_time = models.DateTimeField(blank=True, null=True, verbose_name="время окончания рассылки")
     text = models.TextField(verbose_name="текст сообщения")
-    filter_client = models.JSONField(default=dict, verbose_name="фильтр клиентов")
+    filter_client = models.JSONField(default=dict, validators=[filter_validator, ], verbose_name="фильтр клиентов")
 
     def __str__(self):
         return f'Mailing id: {self.id}, text: {self.text}'
@@ -21,7 +22,7 @@ class Client(models.Model):
 
     TIMEZONES = tuple(zip(pytz.all_timezones, pytz.all_timezones))
 
-    phone_number = models.CharField(max_length=15, verbose_name='номер телефона')
+    phone_number = models.CharField(max_length=15, validators=[phone_number_validator, ], verbose_name='номер телефона')
     code_operator = models.CharField(max_length=5, verbose_name='код оператора')
     tag = models.CharField(max_length=10, verbose_name='тэг')
     timezone = models.CharField(max_length=32, choices=TIMEZONES, default='UTC', verbose_name='часовой пояс')

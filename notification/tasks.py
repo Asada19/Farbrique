@@ -22,8 +22,3 @@ def create_task(mailing: Mailing, client: Client) -> None:
         else:
             create_task.apply_async((client, mailing), countdown=180)
 
-
-
-
-
-
