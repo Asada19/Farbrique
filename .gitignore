@@ -24,3 +24,5 @@
 /web/media
 /stats/
 .env
+celerybeat-schedule
+db.sqlite3

@@ -9,7 +9,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class MailingSerializer(serializers.ModelSerializer):
-    message = MessageSerializer(many=True)
+    message = MessageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Mailing

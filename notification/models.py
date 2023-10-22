@@ -1,4 +1,4 @@
-import uuid
+import pytz
 from django.db import models
 
 
@@ -18,10 +18,13 @@ class Mailing(models.Model):
 
 
 class Client(models.Model):
+
+    TIMEZONES = tuple(zip(pytz.all_timezones, pytz.all_timezones))
+
     phone_number = models.CharField(max_length=15, verbose_name='номер телефона')
     code_operator = models.CharField(max_length=5, verbose_name='код оператора')
     tag = models.CharField(max_length=10, verbose_name='тэг')
-    timezone = models.CharField(max_length=15, verbose_name='часовой пояс')
+    timezone = models.CharField(max_length=32, choices=TIMEZONES, default='UTC', verbose_name='часовой пояс')
 
     def __str__(self):
         return self.phone_number
@@ -40,8 +43,8 @@ class Message(models.Model):
     created_at = models.DateTimeField(auto_now=True, verbose_name='время создания')
     status = models.CharField(choices=Status.choices, default=Status.NOT_SENT, max_length=10, verbose_name='статус')
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name='messages',
-                                verbose_name='рассылки', blank=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages', verbose_name='клиенты')
+                                verbose_name='рассылкa', blank=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages', verbose_name='клиент')
 
     def __str__(self):
         return f'{self.created_at}'
