@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Newsletter, Client, Message
+from .models import Mailing, Client, Message
 
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -8,16 +8,16 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class NewsletterSerializer(serializers.ModelSerializer):
+class MailingSerializer(serializers.ModelSerializer):
     message = MessageSerializer(many=True)
 
     class Meta:
-        model = Newsletter
+        model = Mailing
         fields = '__all__'
 
     def create(self, validated_data):
         messages = validated_data.pop('message')
-        newsletter = Newsletter.objects.create(**validated_data)
+        newsletter = Mailing.objects.create(**validated_data)
         for message in messages:
             Message.objects.create(**message)
         return newsletter
@@ -39,12 +39,8 @@ class NewsletterSerializer(serializers.ModelSerializer):
         return instance
 
 
-class NewsletterRetrieveSerializer(NewsletterSerializer):
-    message = MessageSerializer(many=True)
-
-
 class ClientSerializer(serializers.ModelSerializer):
-    message = MessageSerializer(many=True)
+    messages = MessageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Client
@@ -52,8 +48,7 @@ class ClientSerializer(serializers.ModelSerializer):
 
 
 class StatisticSerializer(serializers.Serializer):
-    newsletter = serializers.CharField()
-    messages = MessageSerializer(read_only=True, many=True)
+    mailing = serializers.CharField()
     count_of_sent = serializers.IntegerField()
     count_of_not_sent = serializers.IntegerField()
 
