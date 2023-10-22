@@ -1,16 +1,16 @@
 from rest_framework.decorators import action
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, parsers
 from rest_framework.response import Response
-from notification.serializers import NewsletterSerializer, ClientSerializer, MessageSerializer, StatisticSerializer
+from notification.serializers import MailingSerializer, ClientSerializer, MessageSerializer, StatisticSerializer
 from notification.services import NewsletterService
-from .models import Newsletter, Client, Message
+from .models import Mailing, Client, Message
 from drf_yasg.utils import swagger_auto_schema
 
 
 class NewsletterAPIView(viewsets.ModelViewSet):
-    model = Newsletter
-    serializer_class = NewsletterSerializer
-    queryset = Newsletter.objects.all()
+    model = Mailing
+    serializer_class = MailingSerializer
+    queryset = Mailing.objects.all()
     service = NewsletterService
 
     @action(detail=False, methods=['get'])
@@ -30,4 +30,4 @@ class ClientAPIView(viewsets.ModelViewSet):
     model = Client
     serializer_class = ClientSerializer
     queryset = Client.objects.all()
-
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser)
