@@ -1,11 +1,10 @@
 import os
 import requests
 from celery import shared_task
-from .models import Mailing, Client, Message
 from django.db.models import Q, Count
 
 
-@shared_task()
+@shared_task
 def send_mailing_message(message_id: int, phone_number: str, text: str):
     service_url = f'https://probe.fbrq.cloud/docs#/send/{message_id}'
     access_token = os.environ.get('EXTERNAL_APP_ACCESS_TOKEN')
@@ -19,6 +18,7 @@ def send_mailing_message(message_id: int, phone_number: str, text: str):
         "phone": phone_number,
         "text": text,
     }
+    print('Message sent')
     return requests.post(service_url, json=request_body, headers=headers)
 
 

@@ -113,9 +113,11 @@ REDIS_HOST = os.environ.get('REDIS_HOST')
 REDIS_PORT = os.environ.get('REDIS_PORT')
 REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0")
-CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0")
-
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", f"redis://{REDIS_HOST}:{REDIS_PORT}/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", f"redis://{REDIS_HOST}:{REDIS_PORT}/0")
+CELERY_IMPORTS = [
+    'notification.tasks',
+]
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

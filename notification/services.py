@@ -9,7 +9,7 @@ class NewsletterService:
 
         data = [
             {
-                'newsletter': mailing,
+                'mailing': mailing,
                 'count_of_sent': len(list(mailing.messages.filter(status='SENT'))),
                 'count_of_not_sent': len(list(mailing.messages.filter(status='NOT_SENT'))),
             } for mailing in Mailing.objects.all()

@@ -1,6 +1,7 @@
 import pytz
 from django.db import models
 from .validators import phone_number_validator, filter_validator
+from notification.tasks import create_task
 
 
 class Mailing(models.Model):
@@ -11,6 +12,10 @@ class Mailing(models.Model):
 
     def __str__(self):
         return f'Mailing id: {self.id}, text: {self.text}'
+
+    def save(self, *args, **kwargs):
+        create_task.delay(self.id)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Рассылка"
@@ -43,9 +48,16 @@ class Message(models.Model):
 
     created_at = models.DateTimeField(auto_now=True, verbose_name='время создания')
     status = models.CharField(choices=Status.choices, default=Status.NOT_SENT, max_length=10, verbose_name='статус')
-    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name='messages',
-                                verbose_name='рассылкa', blank=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='messages', verbose_name='клиент')
+    mailing = models.ForeignKey(Mailing,
+                                on_delete=models.CASCADE,
+                                related_name='messages',
+                                verbose_name='рассылкa',
+                                blank=True)
+    client = models.ForeignKey(Client,
+                               on_delete=models.CASCADE,
+                               related_name='messages',
+                               verbose_name='клиент',
+                               blank=True)
 
     def __str__(self):
         return f'{self.created_at}'

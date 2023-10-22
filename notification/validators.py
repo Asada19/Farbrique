@@ -14,7 +14,7 @@ def filter_validator(filter_parameters: Dict[str, Union[str, list]]) -> bool:
     if not isinstance(filter_parameters, dict):
         raise ValidationError("Filter parameters must be a dictionary")
 
-    allowed_keys = {'operator_code', 'tag'}
+    allowed_keys = {'code_operator', 'tag'}
     for key, value in filter_parameters.items():
         if key not in allowed_keys:
             raise ValidationError(f"Invalid filter parameter: {key}")
