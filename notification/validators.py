@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List
+from typing import Dict, Union
 from rest_framework.exceptions import ValidationError
 
 
@@ -10,7 +10,7 @@ def phone_number_validator(phone_number: str) -> bool:
     return True
 
 
-def filter_validator(filter_parameters: Dict[str, List[str]]) -> bool:
+def filter_validator(filter_parameters: Dict[str, Union[str, list]]) -> bool:
     if not isinstance(filter_parameters, dict):
         raise ValidationError("Filter parameters must be a dictionary")
 

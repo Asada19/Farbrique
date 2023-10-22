@@ -2,6 +2,7 @@ import os
 import requests
 from celery import shared_task
 from .models import Mailing, Client, Message
+from django.db.models import Q, Count
 
 
 @shared_task()
@@ -26,3 +27,20 @@ def create_message(mailing_id, client_id):
     mailing = Mailing.objects.get(id=mailing_id)
     message = Message.objects.create(client=client, mailing=mailing)
     return message
+
+
+def filter_clients(mailing):
+
+    tag = mailing.filter_client.get('tag')
+    operator_code = mailing.filter_client.get('operator_code')
+
+    filter_args = Q()
+
+    if tag:
+        filter_args &= Q(tag__in=tag)
+    if operator_code:
+        filter_args &= Q(operator_code__in=operator_code)
+
+    clients = Client.objects.filter(filter_args)
+
+    return clients
