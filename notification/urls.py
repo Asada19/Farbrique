@@ -5,7 +5,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 
 router.register(r'mailing', NewsletterAPIView, basename='mailing')
-router.register(r'clients', ClientAPIView, basename='client')
+router.register(r'clients', ClientAPIView, basename='clients')
 
 
 urlpatterns = [
