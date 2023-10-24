@@ -2,7 +2,7 @@ from rest_framework.decorators import action
 from rest_framework import viewsets, status, parsers
 from rest_framework.response import Response
 from notification.serializers import MailingSerializer, ClientSerializer, MessageSerializer, StatisticSerializer
-from notification.services import NewsletterService
+from notification.services import MailingService
 from .models import Mailing, Client, Message
 from drf_yasg.utils import swagger_auto_schema
 
@@ -11,7 +11,7 @@ class NewsletterAPIView(viewsets.ModelViewSet):
     model = Mailing
     serializer_class = MailingSerializer
     queryset = Mailing.objects.all()
-    service = NewsletterService
+    service = MailingService
 
     @action(detail=False, methods=['get'])
     def general_statistics(self, *args, **kwargs):

@@ -32,3 +32,30 @@ def start_message(mailing_id):
             start_message.apply_async((mailing_id,), eta=mailing.start_time)
     except Mailing.DoesNotExist:
         pass
+
+
+@shared_task
+def send_statistic_to_mail():
+    from django.core.mail import EmailMultiAlternatives, send_mail
+    from django.template.loader import render_to_string
+    from django.utils.html import strip_tags
+    from notification.models import Mailing, Message
+
+    subject = f'Статистика рассылок за {datetime.now()}'
+    mailings = Mailing.objects.all()
+    count = len(mailings)
+    data = []
+    for mail in mailings:
+        msg = Message.objects.filter(mailing=mail).all()
+        sent = len(msg.filter(status='SENT'))
+        no_sent = len(msg.filter(status='NO_SENT'))
+        res = f'Рассылка  id: {mail.id}, время запуска: {mail.start_time} - время окончания: {mail.end_time} \n'\
+              f'    Сообщения: {len(msg)}; Доставлено: {sent}; Не доставлено: {no_sent};'
+        data.append(res)
+    context = {
+        'mailings_count': count,
+        'messages': data
+    }
+    html_content = render_to_string(template_name='notification/notification_statistic.html', context=context)
+    text_content = strip_tags(html_content)
+    send_mail(subject, text_content, settings.FROM_MAIL, [settings.EMAIL_HOST_USER], fail_silently=True)

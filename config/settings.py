@@ -63,7 +63,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -101,14 +101,25 @@ else:
         }
     }
 
-MONGO_INITDB_ROOT_USERNAME = os.getenv('MONGO_INITDB_ROOT_USERNAME')
-MONGO_INITDB_ROOT_PASSWORD = os.getenv('MONGO_INITDB_ROOT_PASSWORD')
-MONGO_INITDB_DATABASE = os.getenv('MONGO_INITDB_DATABASE')
-MONGO_INITDB_USERNAME = os.getenv('MONGO_INITDB_USERNAME')
-MONGO_INITDB_PASSWORD = os.getenv('MONGO_INITDB_PASSWORD')
-MONGO_HOST = os.getenv('MONGO_HOST')
-MONGO_PORT = os.getenv('MONGO_PORT')
+# smtp
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'example@gmail.com')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+FROM_MAIL = os.environ.get('FROM_MAIL')
 
+# mongo
+MONGO_INITDB_ROOT_USERNAME = os.environ.get('MONGO_INITDB_ROOT_USERNAME')
+MONGO_INITDB_ROOT_PASSWORD = os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
+MONGO_INITDB_DATABASE = os.environ.get('MONGO_INITDB_DATABASE')
+MONGO_INITDB_USERNAME = os.environ.get('MONGO_INITDB_USERNAME')
+MONGO_INITDB_PASSWORD = os.environ.get('MONGO_INITDB_PASSWORD')
+MONGO_HOST = os.environ.get('MONGO_HOST')
+MONGO_PORT = os.environ.get('MONGO_PORT')
+
+# redis
 REDIS_HOST = os.environ.get('REDIS_HOST')
 REDIS_PORT = os.environ.get('REDIS_PORT')
 REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')

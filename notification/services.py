@@ -1,7 +1,7 @@
 from .models import Mailing, Message, Client
 
 
-class NewsletterService:
+class MailingService:
     model = Mailing
 
     @classmethod
