@@ -61,6 +61,16 @@ class MailingAPITestCase(APITestCase):
         self.assertEqual(Mailing.objects.count(), 1)
         self.assertEqual(Mailing.objects.filter(id=self.mailing_1.id).count(), 0)
 
+    def test_general_statistic(self):
+        url = reverse('mailing-general-statistics')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_detail_statistic(self):
+        url = reverse('mailing-detail-statistics', args=[self.mailing_1.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class ClientAPITestCase(APITestCase):
 
