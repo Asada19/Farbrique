@@ -46,10 +46,12 @@ INSTALLED_APPS = [
     # my apps
     'rest_framework',
     'drf_yasg',
+    'django_prometheus',
     'notification',
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,8 +59,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
     'notification.middleware.logging.RequestLoggingMiddleware'
 ]
+
+# prometheus
+
+PROMETHEUS_LATENCY_BUCKETS = (0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0, 25.0, 50.0, 75.0, float("inf"),)
+
 
 ROOT_URLCONF = 'config.urls'
 
@@ -87,7 +95,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 if os.environ.get('DB_ENGINE'):
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
+            'ENGINE': 'django_prometheus.db.backends.postgresql',
             'NAME': os.environ.get('POSTGRES_DB_NAME'),
             'USER': os.environ.get('POSTGRES_USER_NAME'),
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
@@ -98,10 +106,20 @@ if os.environ.get('DB_ENGINE'):
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
+            'ENGINE': 'django_prometheus.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_prometheus.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
+    }
+}
+
+# ROOT_URLCONF = "graphite.urls_prometheus_wrapper"
 
 # logging
 LOG_DIR = os.path.join(BASE_DIR, 'logs')

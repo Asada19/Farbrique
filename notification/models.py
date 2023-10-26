@@ -2,9 +2,10 @@ import pytz
 from django.db import models
 from .validators import phone_number_validator, filter_validator
 from notification.tasks import start_message
+from django_prometheus.models import ExportModelOperationsMixin
 
 
-class Mailing(models.Model):
+class Mailing(ExportModelOperationsMixin('mailing'), models.Model):
     start_time = models.DateTimeField(verbose_name="время запуска рассылки")
     end_time = models.DateTimeField(blank=True, null=True, verbose_name="время окончания рассылки")
     text = models.TextField(verbose_name="текст сообщения")
@@ -23,7 +24,7 @@ class Mailing(models.Model):
         ordering = ['-start_time']
 
 
-class Client(models.Model):
+class Client(ExportModelOperationsMixin('client'), models.Model):
 
     TIMEZONES = tuple(zip(pytz.all_timezones, pytz.all_timezones))
 
@@ -40,7 +41,7 @@ class Client(models.Model):
         verbose_name_plural = verbose_name
 
 
-class Message(models.Model):
+class Message(ExportModelOperationsMixin('message'), models.Model):
 
     class Status(models.TextChoices):
         SENT = 'SENT', 'SENT'

@@ -20,6 +20,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('config.swagger')),
     path('notification/', include('notification.urls')),
-    path('', include('config.swagger'))
+    path('', include('django_prometheus.urls')),
 ]
