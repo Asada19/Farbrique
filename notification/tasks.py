@@ -1,4 +1,5 @@
 import pytz
+from django.utils import timezone
 from celery import shared_task
 from datetime import datetime
 from django.conf import settings
@@ -7,13 +8,18 @@ from .notify import send_mailing_message, create_message, filter_clients
 
 @shared_task
 def start_message(mailing_id):
+    print('get task')
+    import logging
     from notification.models import Mailing, Client, Message
+    message_logger = logging.getLogger('message')
 
     try:
+        print('start recieve')
         mailing = Mailing.objects.get(id=mailing_id)
-        current_time = datetime.now().astimezone(pytz.timezone(settings.TIME_ZONE))
+        current_time = timezone.now()
 
-        if mailing.start_time <= current_time <= mailing.end_time:
+        if not mailing.start_time <= current_time <= mailing.end_time:
+            print('this is will not work')
             return  # Exit if current time is within the mailing window
 
         clients = filter_clients(mailing)
@@ -24,6 +30,12 @@ def start_message(mailing_id):
                                             text=mailing.text)
             if response.status_code == 200:
                 message.status = 'SENT'
+                message_logger.info({'id': message.id,
+                                     'method': 'UPDATE',
+                                     'status': message.status,
+                                     'client_id': client.id,
+                                     'mailing_id': mailing.id
+                                     })
                 message.save()
             else:
                 start_message.apply_async((mailing_id,), countdown=180)
@@ -48,7 +60,7 @@ def send_statistic_to_mail():
     for mail in mailings:
         msg = Message.objects.filter(mailing=mail).all()
         sent = len(msg.filter(status='SENT'))
-        no_sent = len(msg.filter(status='NO_SENT'))
+        no_sent = len(msg.filter(status='NOT_SENT'))
         res = f'Рассылка  id: {mail.id}, время запуска: {mail.start_time} - время окончания: {mail.end_time} \n'\
               f'    Сообщения: {len(msg)}; Доставлено: {sent}; Не доставлено: {no_sent};'
         data.append(res)

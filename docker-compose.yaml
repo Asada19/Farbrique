@@ -1,16 +1,6 @@
 version: "3.9"
 
 services:
-  mongo:
-    image: mongo:6.0.3
-    env_file:
-      - .env
-    volumes:
-      - mongodata:/var/lib/mongo/data
-    ports:
-      - "27017:27017"
-    networks:
-      - net
   postgres:
     image: postgres
     volumes:
@@ -72,7 +62,6 @@ services:
       - net
 volumes:
   pgdata:
-  mongodata:
   redisdata:
   static:
 networks:

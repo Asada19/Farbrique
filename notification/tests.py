@@ -1,6 +1,5 @@
-import datetime
-
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -12,9 +11,9 @@ from .serializers import MailingSerializer, ClientSerializer
 class MailingAPITestCase(APITestCase):
 
     def setUp(self):
-        self.mailing_1 = Mailing.objects.create(start_time=datetime.datetime.now(), end_time='2024-10-23T00:00:00Z',
+        self.mailing_1 = Mailing.objects.create(start_time=timezone.now(), end_time='2024-10-23T00:00:00Z',
                                                 text='test 1', filter_client={'tag': ['test'], 'code_operator': []})
-        self.mailing_2 = Mailing.objects.create(start_time=datetime.datetime.now(), end_time='2024-10-23T00:00:00Z',
+        self.mailing_2 = Mailing.objects.create(start_time=timezone.now(), end_time='2024-10-23T00:00:00Z',
                                                 text='test 2', filter_client={'tag': ['test'], 'code_operator': []})
         self.client_1 = Client.objects.create(phone_number='70000000000', tag='test', timezone='Asia/Bishkek')
         self.client_2 = Client.objects.create(phone_number='70000000001', tag='test', timezone='Asia/Bishkek')
@@ -34,7 +33,7 @@ class MailingAPITestCase(APITestCase):
 
     def test_create_mailing(self):
         data = {
-            'start_time': datetime.datetime.utcnow(),
+            'start_time': timezone.now(),
             'text': 'test 3',
             'filter_client': {'tag': ['test'], 'code_operator': []}
         }
