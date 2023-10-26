@@ -6,8 +6,6 @@ stages:
 test:
   stage: test
   script:
-    - ls
-    - cd /notificator
     - pip install --upgrade pip
     - pip install -r requirements.txt
     - python manage.py test
