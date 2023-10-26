@@ -1,0 +1,31 @@
+
+request INFO 2023-10-26 13:48:25,046 <console> test
+mailing INFO 2023-10-26 13:48:54,860 <console> Mailing test
+request INFO 2023-10-26 13:49:37,215 <console> hello
+mailing INFO 2023-10-26 13:58:26,803 <console> что за херня
+mailing INFO 2023-10-26 13:58:48,750 <console> blyeat
+mailing INFO 2023-10-26 13:58:57,361 <console> blyeat
+mailing INFO 2023-10-26 13:59:08,549 <console> suka
+mailing INFO 2023-10-26 13:59:12,432 <console> sukaaaaa
+mailing INFO 2023-10-26 14:07:05,440 <console> sukaaaaa
+django.utils.autoreload INFO 2023-10-26 14:19:46,832 autoreload Watching for file changes with StatReloader
+request INFO 2023-10-26 14:19:52,741 logging {'method': 'GET', 'path': '/notification/mailing/1/', 'body': b'', 'headers': {'Content-Length': '', 'Content-Type': 'text/plain', 'Host': '127.0.0.1:8000', 'Accept': 'application/json', 'Sec-Fetch-Site': 'same-origin', 'Accept-Language': 'ru', 'Accept-Encoding': 'gzip, deflate', 'Sec-Fetch-Mode': 'cors', 'X-Csrftoken': '1OLgJVPTXAPEZRRIz4w4oMyDmmFv88TCjQP0ZfradLRdLa7d9iifHC4RdT9dYUB2', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', 'Connection': 'keep-alive', 'Referer': 'http://127.0.0.1:8000/docs/', 'Cookie': 'csrftoken=sceUquMrqlcJWtqFKoWlt0Go1HES0WSA', 'Sec-Fetch-Dest': 'empty'}}
+mailing INFO 2023-10-26 14:19:52,772 logging Mailing id:1 - method:GET /notification/mailing/1/
+request INFO 2023-10-26 14:20:10,676 logging {'method': 'GET', 'path': '/notification/mailing/', 'body': b'', 'headers': {'Content-Length': '', 'Content-Type': 'text/plain', 'Host': '127.0.0.1:8000', 'Accept': 'application/json', 'Sec-Fetch-Site': 'same-origin', 'Accept-Language': 'ru', 'Accept-Encoding': 'gzip, deflate', 'Sec-Fetch-Mode': 'cors', 'X-Csrftoken': '1OLgJVPTXAPEZRRIz4w4oMyDmmFv88TCjQP0ZfradLRdLa7d9iifHC4RdT9dYUB2', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', 'Connection': 'keep-alive', 'Referer': 'http://127.0.0.1:8000/docs/', 'Cookie': 'csrftoken=sceUquMrqlcJWtqFKoWlt0Go1HES0WSA', 'Sec-Fetch-Dest': 'empty'}}
+mailing INFO 2023-10-26 14:20:10,712 logging Mailing id:None - method:GET /notification/mailing/
+django.utils.autoreload INFO 2023-10-26 14:22:18,643 autoreload /notificator/notification/middleware/logging.py changed, reloading.
+django.utils.autoreload INFO 2023-10-26 14:22:20,309 autoreload Watching for file changes with StatReloader
+request INFO 2023-10-26 14:22:24,552 logging {'method': 'GET', 'path': '/notification/mailing/', 'body': b'', 'headers': {'Content-Length': '', 'Content-Type': 'text/plain', 'Host': '127.0.0.1:8000', 'Accept': 'application/json', 'Sec-Fetch-Site': 'same-origin', 'Accept-Language': 'ru', 'Accept-Encoding': 'gzip, deflate', 'Sec-Fetch-Mode': 'cors', 'X-Csrftoken': '1OLgJVPTXAPEZRRIz4w4oMyDmmFv88TCjQP0ZfradLRdLa7d9iifHC4RdT9dYUB2', 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15', 'Connection': 'keep-alive', 'Referer': 'http://127.0.0.1:8000/docs/', 'Cookie': 'csrftoken=sceUquMrqlcJWtqFKoWlt0Go1HES0WSA', 'Sec-Fetch-Dest': 'empty'}}
+django.request ERROR 2023-10-26 14:22:24,635 log Internal Server Error: /notification/mailing/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/notificator/notification/middleware/logging.py", line 29, in __call__
+    mailing_logger.info(f"Message {mailing_id} - {request.method} {request.path}", formatter='json_formatter')
+  File "/usr/local/lib/python3.11/logging/__init__.py", line 1489, in info
+    self._log(INFO, msg, args, **kwargs)
+TypeError: Logger._log() got an unexpected keyword argument 'formatter'
+django.utils.autoreload INFO 2023-10-26 14:23:45,142 autoreload /notificator/notification/middleware/logging.py changed, reloading.
+django.utils.autoreload INFO 2023-10-26 14:23:48,778 autoreload Watching for file changes with StatReloader
+django.utils.autoreload INFO 2023-10-26 14:25:11,274 autoreload /notificator/config/settings.py changed, reloading.

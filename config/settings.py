@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from .logging_conf import CustomLoggerFormatter
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'notification.middleware.logging.RequestLoggingMiddleware'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -101,6 +103,70 @@ else:
         }
     }
 
+# logging
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json_formatter": {
+            '()': CustomLoggerFormatter
+        }
+    },
+    'handlers': {
+        'request_file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'requests.log'),
+            'formatter': 'json_formatter'
+
+        },
+        'mailing_file': {
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'mailings.log'),
+            'formatter': 'json_formatter'
+
+        },
+        'message_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'messages.log'),
+            'formatter': 'json_formatter'
+        },
+        'client_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOG_DIR, 'clients.log'),
+            'formatter': 'json_formatter'
+        }
+    },
+    "loggers": {
+        'request': {
+            'handlers': ['request_file'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'mailing': {
+            'handlers': ['mailing_file'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'message': {
+            'handlers': ['message_file'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'client': {
+            'handlers': ['client_file'],
+            'propagate': True,
+            'level': 'INFO',
+        }
+    }
+}
+
 # smtp
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'example@gmail.com')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
@@ -109,15 +175,6 @@ EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 FROM_MAIL = os.environ.get('FROM_MAIL')
-
-# mongo
-MONGO_INITDB_ROOT_USERNAME = os.environ.get('MONGO_INITDB_ROOT_USERNAME')
-MONGO_INITDB_ROOT_PASSWORD = os.environ.get('MONGO_INITDB_ROOT_PASSWORD')
-MONGO_INITDB_DATABASE = os.environ.get('MONGO_INITDB_DATABASE')
-MONGO_INITDB_USERNAME = os.environ.get('MONGO_INITDB_USERNAME')
-MONGO_INITDB_PASSWORD = os.environ.get('MONGO_INITDB_PASSWORD')
-MONGO_HOST = os.environ.get('MONGO_HOST')
-MONGO_PORT = os.environ.get('MONGO_PORT')
 
 # redis
 REDIS_HOST = os.environ.get('REDIS_HOST')
@@ -170,3 +227,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGOUT_REDIRECT_URL = '/docs/'

@@ -29,6 +29,7 @@ psycopg2-binary==2.9.9
 pymongo==4.5.0
 python-dateutil==2.8.2
 python-dotenv==1.0.0
+python-json-logger==2.0.7
 python-slugify==8.0.1
 pytz==2023.3.post1
 PyYAML==6.0.1
