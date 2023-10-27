@@ -1,5 +1,4 @@
 stages:
-  - setup
   - build
   - test
   - deploy
@@ -26,32 +25,22 @@ variables:
   REDIS_PORT: '$REDIS_PORT'
 
 services:
-  - name: docker:19.03.12-dind
-    entrypoint: ["env", "-u", "DOCKER_TLS_CERTDIR"]
-    command: ["dockerd-entrypoint.sh"]
-
-setup:
-  stage: setup
-  script:
-    - apk add py-pip
-    - pip install docker-compose
-
+  - docker:19.03.12-dind
 
 build:
   stage: build
   script:
-    - docker-compose build
-
+    - docker/compose:latest build
 
 test:
   stage: test
   script:
-    - docker-compose run web python manage.py test
+    - docker/compose:latest run web python manage.py test
 
-#deploy:
-#  stage: deploy
-#  only:
-#    - master
-#  script:
-#    - docker-compose down
-#    - docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+deploy:
+  stage: deploy
+  only:
+    - master
+  script:
+    - docker/compose:latest down
+    - docker/compose:latest -f docker-compose.yml -f docker-compose.prod.yml up -d
