@@ -30,7 +30,7 @@ services:
 build:
   stage: build
   script:
-    - docker-compose -f docker-compose.yaml build
+    - docker/compose:latest -f docker-compose.yaml build
 
 test:
   stage: test
