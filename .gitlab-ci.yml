@@ -29,10 +29,18 @@ services:
     entrypoint: ["env", "-u", "DOCKER_TLS_CERTDIR"]
     command: ["dockerd-entrypoint.sh"]
 
+setup:
+  stage: setup
+  script:
+    - apk add py-pip
+    - pip install docker-compose
+
+
 build:
   stage: build
   script:
     - docker-compose build
+
 
 test:
   stage: test
