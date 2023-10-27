@@ -30,12 +30,12 @@ services:
 build:
   stage: build
   script:
-    - docker/compose:latest build
+    - docker-compose -f docker-compose.yaml build
 
 test:
   stage: test
   script:
-    - docker/compose:latest run web python manage.py test
+    - docker/compose:latest run web-1 python manage.py test
 
 deploy:
   stage: deploy
