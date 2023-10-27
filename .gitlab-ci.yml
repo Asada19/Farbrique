@@ -1,11 +1,48 @@
-image: python:3.11
-
 stages:
+  - build
   - test
+  - deploy
+
+variables:
+  SECRET_KEY: '$SECRET_KEY'
+  DEBUG: '$DEBUG'
+  DJANGO_ALLOWED_HOSTS: '$DJANGO_ALLOWED_HOSTS'
+  EMAIL_HOST: '$EMAIL_HOST'
+  EMAIL_HOST_USER: '$EMAIL_HOST_USER'
+  EMAIL_HOST_PASSWORD: '$EMAIL_HOST_PASSWORD'
+  EMAIL_PORT: '$EMAIL_PORT'
+  EMAIL_USE_TLS: '$EMAIL_USE_TLS'
+  FROM_EMAIL: '$FROM_EMAIL'
+  DB_ENGINE: '$DB_ENGINE'
+  POSTGRES_DB_NAME: '$POSTGRES_DB_NAME'
+  POSTGRES_USER_NAME: '$POSTGRES_USER_NAME'
+  POSTGRES_PASSWORD: '$POSTGRES_PASSWORD'
+  POSTGRES_HOST: '$POSTGRES_HOST'
+  POSTGRES_PORT: '$POSTGRES_PORT'
+  CELERY_BROKER: '$CELERY_BROKER'
+  CELERY_BACKEND: '$CELERY_BACKEND'
+  REDIS_HOST: '$REDIS_HOST'
+  REDIS_PORT: '$REDIS_PORT'
+
+services:
+  - name: docker:19.03.12-dind
+    entrypoint: ["env", "-u", "DOCKER_TLS_CERTDIR"]
+    command: ["dockerd-entrypoint.sh"]
+
+build:
+  stage: build
+  script:
+    - docker-compose build
 
 test:
   stage: test
   script:
-    - pip install --upgrade pip
-    - pip install -r requirements.txt
-    - python manage.py test
+    - docker-compose run web python manage.py test
+
+#deploy:
+#  stage: deploy
+#  only:
+#    - master
+#  script:
+#    - docker-compose down
+#    - docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
