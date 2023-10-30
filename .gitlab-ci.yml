@@ -1,7 +1,22 @@
+image: gitlab/dind
+
+services:
+  - name: docker:dind
+
+
 stages:
   - build
   - test
-  - deploy
+
+
+before_script:
+- 'which ssh-agent || ( apt-get install -qq openssh-client )'
+- eval $(ssh-agent -s)
+- ssh-add <(echo "$SSH_KEY")
+- mkdir -p ~/.ssh
+- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+
 
 variables:
   SECRET_KEY: '$SECRET_KEY'
@@ -24,22 +39,19 @@ variables:
   REDIS_HOST: '$REDIS_HOST'
   REDIS_PORT: '$REDIS_PORT'
 
-services:
-  - name: docker:19.03.12-dind
-    entrypoint: ["env", "-u", "DOCKER_TLS_CERTDIR"]
-    command: ["dockerd-entrypoint.sh"]
-
-setup:
-  stage: setup
-  script:
-    - apk add py-pip
-    - pip install docker-compose
-
 
 build:
   stage: build
   script:
-    - docker-compose build
+    # Я использую реестр образов GitLab, поэтому необходимо сначала залогинится
+    - docker login -u probka_deploy -p $PROBKA_DEPLOY_TOKEN registry.gitlab.com
+    # Собираю образ, описание сборки выходит за рамки данной статьи
+    - docker build -t registry.gitlab.com/blucknote/probkabot:latest .
+    # Заливаю свежий образ в реест
+    - docker push registry.gitlab.com/blucknote/probkabot:latest
+  # Указание веток, для которой нужно запускать задачу. В данном примере только одна
+  only:
+    - master
 
 
 test:
