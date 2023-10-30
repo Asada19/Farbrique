@@ -1,7 +1,7 @@
 image: gitlab/dind
 
 services:
-  - name: docker:dind
+  - docker:19.03.12-dind
 
 
 stages:
@@ -43,26 +43,17 @@ variables:
 build:
   stage: build
   script:
-    # Я использую реестр образов GitLab, поэтому необходимо сначала залогинится
-    - docker login -u probka_deploy -p $PROBKA_DEPLOY_TOKEN registry.gitlab.com
-    # Собираю образ, описание сборки выходит за рамки данной статьи
-    - docker build -t registry.gitlab.com/blucknote/probkabot:latest .
-    # Заливаю свежий образ в реест
-    - docker push registry.gitlab.com/blucknote/probkabot:latest
-  # Указание веток, для которой нужно запускать задачу. В данном примере только одна
-  only:
-    - master
-
+    - docker/compose:latest -f docker-compose.yaml build
 
 test:
   stage: test
   script:
-    - docker-compose run web python manage.py test
+    - docker/compose:latest run web-1 python manage.py test
 
-#deploy:
-#  stage: deploy
-#  only:
-#    - master
-#  script:
-#    - docker-compose down
-#    - docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+deploy:
+  stage: deploy
+  only:
+    - master
+  script:
+    - docker/compose:latest down
+    - docker/compose:latest -f docker-compose.yml -f docker-compose.prod.yml up -d
