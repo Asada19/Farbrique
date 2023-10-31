@@ -42,7 +42,6 @@ def create_message(mailing_id, client_id):
 
 def filter_clients(mailing):
     from notification.models import Client
-
     tag = mailing.filter_client.get('tag')
     operator_code = mailing.filter_client.get('operator_code')
     filter_args = Q()

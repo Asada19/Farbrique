@@ -6,13 +6,18 @@ from notification.serializers import MailingSerializer, ClientSerializer, Messag
 from notification.services import MailingService
 from .models import Mailing, Client, Message
 from drf_yasg.utils import swagger_auto_schema
+from .tasks import start_message
 
 
-class NewsletterAPIView(viewsets.ModelViewSet):
+class MailingViewSet(viewsets.ModelViewSet):
     model = Mailing
     serializer_class = MailingSerializer
     queryset = Mailing.objects.all()
     service = MailingService
+
+    def perform_create(self, serializer):
+        mailing_id = serializer.save().id
+        start_message.delay(mailing_id)
 
     @action(detail=False, methods=['get'])
     def general_statistics(self, *args, **kwargs):
