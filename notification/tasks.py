@@ -8,42 +8,44 @@ from .notify import send_mailing_message, create_message, filter_clients
 
 @shared_task
 def start_message(mailing_id):
-    print('get task')
     import logging
     from notification.models import Mailing, Client, Message
     message_logger = logging.getLogger('message')
 
     try:
-        print('start recieve')
         mailing = Mailing.objects.get(id=mailing_id)
         current_time = timezone.now()
 
         if not mailing.start_time <= current_time <= mailing.end_time:
-            print('this is will not work')
-            return  # Exit if current time is within the mailing window
+            return
 
         clients = filter_clients(mailing)
         for client in clients:
-            message = create_message(mailing_id=mailing.id, client_id=client.id)
-            response = send_mailing_message(message_id=message.id,
-                                            phone_number=client.phone_number,
-                                            text=mailing.text)
-            if response.status_code == 200:
-                message.status = 'SENT'
-                message_logger.info({'id': message.id,
-                                     'method': 'UPDATE',
-                                     'status': message.status,
-                                     'client_id': client.id,
-                                     'mailing_id': mailing.id
-                                     })
-                message.save()
-            else:
-                start_message.apply_async((mailing_id,), countdown=180)
+            client_local_time = current_time.astimezone(pytz.timezone(client.timezone))
+            start_interval = mailing.start_time
+            end_interval = mailing.end_time
+
+            if start_interval <= client_local_time <= end_interval:
+                message = create_message(mailing_id=mailing.id, client_id=client.id)
+                response = send_mailing_message(message_id=message.id,
+                                                phone_number=client.phone_number,
+                                                text=mailing.text)
+                if response.status_code == 200:
+                    message.status = 'SENT'
+                    message_logger.info({'id': message.id,
+                                         'method': 'UPDATE',
+                                         'status': message.status,
+                                         'client_id': client.id,
+                                         'mailing_id': mailing.id
+                                         })
+                    message.save()
+                else:
+                    start_message.apply_async((mailing_id,), countdown=180)
 
         if current_time <= mailing.start_time:
             start_message.apply_async((mailing_id,), eta=mailing.start_time)
-    except Mailing.DoesNotExist:
-        pass
+    except Exception as e:
+        return {'error': str(e)}
 
 
 @shared_task

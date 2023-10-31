@@ -10,13 +10,10 @@ class Mailing(ExportModelOperationsMixin('mailing'), models.Model):
     end_time = models.DateTimeField(blank=True, null=True, verbose_name="время окончания рассылки")
     text = models.TextField(verbose_name="текст сообщения")
     filter_client = models.JSONField(default=dict, validators=[filter_validator, ], verbose_name="фильтр клиентов")
+    time_interval = models.DurationField(blank=True, null=True, verbose_name="Временной интервал")
 
     def __str__(self):
         return f'Mailing id: {self.id}, text: {self.text}'
-
-    def save(self, *args, **kwargs):
-        start_message.delay(self.id)
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Рассылка"

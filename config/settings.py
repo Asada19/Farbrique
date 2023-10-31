@@ -65,8 +65,8 @@ MIDDLEWARE = [
 
 # prometheus
 
-PROMETHEUS_LATENCY_BUCKETS = (0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0, 25.0, 50.0, 75.0, float("inf"),)
-
+PROMETHEUS_LATENCY_BUCKETS = (0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0,
+                              7.5, 10.0, 25.0, 50.0, 75.0, float("inf"),)
 
 ROOT_URLCONF = 'config.urls'
 
@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 if os.environ.get('DB_ENGINE'):
     DATABASES = {
         'default': {
-            'ENGINE': 'django_prometheus.db.backends.postgresql',
+            'ENGINE': os.environ.get('DB_ENGINE', 'django_prometheus.db.backends.postgresql'),
             'NAME': os.environ.get('POSTGRES_DB_NAME'),
             'USER': os.environ.get('POSTGRES_USER_NAME'),
             'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
