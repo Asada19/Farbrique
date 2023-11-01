@@ -12,13 +12,7 @@ scrape_configs:
     metrics_path: '/metrics'
     static_configs:
       - targets: 
-          - 'web:8000'  
-
-  - job_name: 'django-exporter' 
-    scrape_interval: 5s
-    static_configs:
-      - targets:
-        - 'prometheus-exporter:9102'
+          - 'web:8000'
 
 # Правила оповещений можно настроить здесь
 # или через интерфейс Grafana 
