@@ -8,6 +8,8 @@ COPY . .
 
 RUN pip install --upgrade pip; \
     pip install -r /notificator/requirements.txt; \
+    python manage.py migrate; \
+    python manage.py createsuperuser --noinput --username=$ADMIN_USERNAME --email=$ADMIN_MAIL --password=$ADMIN_PASSWORD; \
     adduser --disabled-password service-user
 
 USER service-user
